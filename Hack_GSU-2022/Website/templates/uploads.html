@@ -1,1 +1,6 @@
 {% extends "base.html" %} {% block title%}Uploads{% endblock %}
+{% block content %}
+{% if text %}
+<p id="text">{{ text|safe }}</p>
+{% endif %}
+{% endblock %}
