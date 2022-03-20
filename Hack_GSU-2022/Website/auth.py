@@ -78,8 +78,10 @@ def uploads():
         for entity in entities:
             wiki = entity['wiki']
             for mention in entity['mentions']:
-                text_content = re.sub(mention+'(?!<)', f'<a href="{wiki}">{mention}</a>', text_content)
-                
+                if mention != 'candidate':
+                    text_content = re.sub(mention+'(?![<"_])', f'<a href="{wiki}">{mention}</a>', text_content)
+
+        text_content = re.sub(r'\n', '<br>', text_content)
         return(text_content)
 
     def analyze(text_content):
@@ -147,6 +149,6 @@ def uploads():
     entities = analyze(plaintext)
     output_text = transform(plaintext, entities)
     os.remove(filename)
-    
+    print(output_text)
     return render_template("uploads.html", user=current_user, text=output_text)
 
