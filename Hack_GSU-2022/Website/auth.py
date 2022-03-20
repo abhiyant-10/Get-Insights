@@ -78,8 +78,10 @@ def uploads():
         for entity in entities:
             wiki = entity['wiki']
             for mention in entity['mentions']:
-                text_content = re.sub(mention+'(?!<)', f'<a href="{wiki}">{mention}</a>', text_content)
-                
+                if mention != 'candidate':
+                    text_content = re.sub(mention+'(?![<"_])', f'<a href="{wiki}" style="color:blue;">{mention}</a>', text_content)
+
+        text_content = re.sub(r'\n', '<br>', text_content)
         return(text_content)
 
     def analyze(text_content):
@@ -136,17 +138,14 @@ def uploads():
 
         return(output_string.getvalue())
 
-    import os
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\SemKj\Downloads\skilful-nexus-344522-3d57dd4a3fa9.json"
-
     from werkzeug.utils import secure_filename
     file = request.files['file']
     filename = secure_filename(file.filename)
-    file.save(filename)
-    plaintext = convert_pdf(filename)
+    path = '/tmp/'+filename
+    file.save(path)
+    plaintext = convert_pdf(path)
     entities = analyze(plaintext)
     output_text = transform(plaintext, entities)
-    os.remove(filename)
-    
+
     return render_template("uploads.html", user=current_user, text=output_text)
 
